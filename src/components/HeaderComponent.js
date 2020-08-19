@@ -17,7 +17,6 @@ class Header extends Component {
 
   }
 
- 
 
   toggleNav() {
     this.setState({
