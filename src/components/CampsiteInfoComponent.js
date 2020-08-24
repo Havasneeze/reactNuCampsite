@@ -1,46 +1,139 @@
 import React, { Component } from "react";
-import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import {
+  Button, Breadcrumb, BreadcrumbItem, Card, CardImg, CardText, CardBody, CardTitle, Modal,
+  ModalHeader, ModalBody, Label, } from "reactstrap";
+import { LocalForm, Control, Errors } from "react-redux-form";
+import { Link } from "react-router-dom";
 
+const required = (val) => val && val.length;
+const maxLength = (len) => (val) => !val || val.length <= len;
+const minLength = (len) => (val) => val && val.length >= len;
+
+class CommentForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modal: false,
+    };
+  }
+  toggleModal = () => {
+    this.setState({ modal: !this.state.modal });
+  };
+  handleSubmit = (values) => {
+    console.log("Workin");
+    this.toggleModal();
+    alert("Current State is " + (JSON.stringify(values)));
+  };
+  render() {
+    return (
+      <>
+        <Button onClick={this.toggleModal} outline type="submit">
+          <i class="fa fa-lg fa-pencil" /> Submit Comment
+        </Button>
+        <Modal isOpen={this.state.modal} toggle={this.toggleModal}>
+          <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
+          <ModalBody>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+             
+              <div className="form-group">
+                <Label htmlFor="rating">Rating</Label>
+                <Control.select
+                  defaultValue ="1"
+                  model=".rating"
+                  id="rating"
+                  name="rating"
+                  className="form-control"
+                >
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </Control.select>
+              </div>
+              <div className="form-group">
+                <Label htmlFor="name">Your Name</Label>
+                <Control.text
+                  model=".name"
+                  id="name"
+                  placeholder="Your Name"
+                  name="name"
+                  className="form-control"
+                  validators={{
+                    required,
+                    minLength: minLength(2),
+                    maxLength: maxLength(15),
+                  }}
+                />
+                <Errors
+                  className="text-danger"
+                  model=".name"
+                  show="touched"
+                  component="div"
+                  messages={{
+                    required: "Required",
+                    minLength: "Must be at least 2 characters",
+                    maxLength: "Must be 15 characters or less",
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <Label htmlFor="comment">Comment</Label>
+                <Control.textarea
+                  model=".comment"
+                  id="comment"
+                  name="comment"
+                  className="form-control"
+                  rows="5"
+                />
+              </div>
+              <Button type="submit" color="primary">
+                Submit
+              </Button>
+            </LocalForm>
+          </ModalBody>
+        </Modal>
+      </>
+    );
+  }
+}
 function RenderCampsite({ campsite }) {
   return (
     <div className="col-md-5 m-1">
       <Card>
         <CardImg top src={campsite.image} alt={campsite.name} />
         <CardBody>
+          <CardTitle>{campsite.name}</CardTitle>
           <CardText>{campsite.description}</CardText>
         </CardBody>
       </Card>
     </div>
   );
 }
-
 function RenderComments({ comments }) {
   if (comments) {
     return (
       <div className="col-md-5 m-1">
-        <h4>Comments</h4>
+        <h4>Comments Inside it</h4>
         {comments.map((comment) => (
-          <div key={comment.id}>
-            <div className="mb-3">
-              <p>{comment.text}</p>
-              <p>
-                -{comment.author}{" "}
-                {new Intl.DateTimeFormat("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "2-digit",
-                }).format(new Date(Date.parse(comment.date)))}
-              </p>
-            </div>
+          <div key={comment.key}>
+            <p>{comment.text}</p>
+            <p>
+              {comment.author} - {""}{" "}
+              {new Intl.DateTimeFormat("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+              }).format(new Date(Date.parse(comment.date)))}
+            </p>
           </div>
         ))}
+        <CommentForm />
       </div>
     );
   }
-  return <div />;
+  return <div></div>;
 }
-
 function CampsiteInfo(props) {
   if (props.campsite) {
     return (
@@ -64,7 +157,6 @@ function CampsiteInfo(props) {
       </div>
     );
   }
-  return <div />;
+  return <div></div>;
 }
-
 export default CampsiteInfo;
