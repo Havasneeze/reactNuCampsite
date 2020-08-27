@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { LocalForm, Control, Errors } from "react-redux-form";
 import { Link } from "react-router-dom";
+import { Loading } from './LoadingComponent';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -41,7 +42,7 @@ function RenderComments({ comments, addComment, campsiteId }) {
         <h4>Comments</h4>
         {comments.map((comment) => (
           <div key={comment.key} className="m-2">
-            <p>{comment.text}</p>
+            <p>"{comment.text}"</p>
             <p>
               -- {comment.author}, {""}{" "}
               {new Intl.DateTimeFormat("en-US", {
@@ -53,6 +54,7 @@ function RenderComments({ comments, addComment, campsiteId }) {
           </div>
         )
             )}
+            <br/>
         <CommentForm campsiteId={campsiteId} addComment={addComment} />
       </div>
     );
@@ -65,6 +67,10 @@ class CommentForm extends Component {
     super(props);
     this.state = {
       modal: false,
+      touched: {
+        author: false,
+        rating: false
+    }
     };
   }
 
@@ -156,6 +162,27 @@ class CommentForm extends Component {
 }
 
 function CampsiteInfo(props) {
+  if (props.isLoading) {
+    return (
+        <div className="container">
+            <div className="row">
+                <Loading />
+            </div>
+        </div>
+    );
+}
+if (props.errMess) {
+    return (
+        <div className="container">
+            <div className="row">
+                <div className="col">
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        </div>
+    );
+}
+  
   if (props.campsite) {
     return (
       <div className="container">
