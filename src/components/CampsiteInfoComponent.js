@@ -15,7 +15,8 @@ import {
 } from "reactstrap";
 import { LocalForm, Control, Errors } from "react-redux-form";
 import { Link } from "react-router-dom";
-import { Loading } from './LoadingComponent';
+import { Loading } from "./LoadingComponent";
+import { baseUrl } from "../shared/baseUrl";
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -25,7 +26,7 @@ function RenderCampsite({ campsite }) {
   return (
     <div className="col-md-5 m-1">
       <Card>
-        <CardImg top src={campsite.image} alt={campsite.name} />
+        <CardImg top src={baseUrl + campsite.image} alt={campsite.name} />
         <CardBody>
           <CardTitle>{campsite.name}</CardTitle>
           <CardText>{campsite.description}</CardText>
@@ -52,9 +53,8 @@ function RenderComments({ comments, addComment, campsiteId }) {
               }).format(new Date(Date.parse(comment.date)))}
             </p>
           </div>
-        )
-            )}
-            <br/>
+        ))}
+        <br />
         <CommentForm campsiteId={campsiteId} addComment={addComment} />
       </div>
     );
@@ -69,22 +69,22 @@ class CommentForm extends Component {
       modal: false,
       touched: {
         author: false,
-        rating: false
-    }
+        rating: false,
+      },
     };
   }
 
   toggleModal = () => {
     this.setState({ modal: !this.state.modal });
   };
-  
+
   handleSubmit(values) {
     this.toggleModal();
     this.props.addComment(
       this.props.campsiteId,
       values.rating,
-      values.author,
-      values.text
+      values.yourName,
+      values.comment
     );
   }
 
@@ -115,12 +115,12 @@ class CommentForm extends Component {
                 </Control.select>
               </div>
               <div className="form-group">
-                <Label htmlFor="name">Your Name</Label>
+                <Label htmlFor="yourName">Your Name</Label>
                 <Control.text
-                  model=".name"
-                  id="name"
+                  model=".yourName"
+                  id="yourName"
                   placeholder="Your Name"
-                  name="name"
+                  name="yourName"
                   className="form-control"
                   validators={{
                     required,
@@ -130,7 +130,7 @@ class CommentForm extends Component {
                 />
                 <Errors
                   className="text-danger"
-                  model=".name"
+                  model=".yourName"
                   show="touched"
                   component="div"
                   messages={{
@@ -164,25 +164,25 @@ class CommentForm extends Component {
 function CampsiteInfo(props) {
   if (props.isLoading) {
     return (
-        <div className="container">
-            <div className="row">
-                <Loading />
-            </div>
+      <div className="container">
+        <div className="row">
+          <Loading />
         </div>
+      </div>
     );
-}
-if (props.errMess) {
+  }
+  if (props.errMess) {
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col">
-                    <h4>{props.errMess}</h4>
-                </div>
-            </div>
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <h4>{props.errMess}</h4>
+          </div>
         </div>
+      </div>
     );
-}
-  
+  }
+
   if (props.campsite) {
     return (
       <div className="container">
