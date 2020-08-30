@@ -25,7 +25,6 @@ const minLength = (len) => (val) => val && val.length >= len;
 
 function RenderCampsite({ campsite }) {
   return (
-    <div className="col-md-5 m-1">
        <div className="col-md-5 m-1">
             <FadeTransform
                 in
@@ -40,7 +39,6 @@ function RenderCampsite({ campsite }) {
                 </Card>
             </FadeTransform>
         </div>
-      </div>
   );
 }
 
